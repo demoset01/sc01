@@ -8,6 +8,10 @@ if [ -z "$2" ]; then echo "Please specify a helm chart name and a version"; exit
 # Checking if Grype is installed
 if [ ! $(which grype) ]; then echo "Grype has not been found. Please follow the README instructions"; exit 1; fi
 
+# Checking the mode
+if [ ! $3 == "" ] && [ ! "$3" == 'full' ] && [ ! $3 == 'light' ]; then echo "The mode name is incorrect. Please specity light or full, or ignore it completely"; exit 1; fi
+
+
 # Setting constants
 SEVERITY_LIST=("Medium" "High" "Critical")
 HEADERS='Image:tag Component/library Vulnerability Severity'
@@ -16,7 +20,7 @@ ARTIFACTHUB_URL=https://artifacthub.io/api/v1/packages/helm
 
 # setting variables
 IMAGES=""
-MODE="search_first"
+MODE="light"
 
 
 # Selecting the mode: full or just search in https://artifacthub.io
@@ -48,6 +52,7 @@ if [ "$MODE" == "full" ] || [ ! $json_verified ]; then
     fi
     if [ -z "$result" ]; then echo "The helm chart $1 has not been found. Please add the chart repo."; exit 1; fi
 
+    # parsing values.yaml
     while read line; do
         IMAGES=$IMAGES"#"$(echo $line | awk '{print $2":"$4}')
     done <<< $(cat $TMPDIR/*/values.yaml | grep 'repository: \|tag: ' | tr '\n' ' ' | sed -r 's/(repository: )/#\1/g' | sed -r 's/#/\n/g' | grep tag)
@@ -77,7 +82,7 @@ echo "$HEADERS" | sed -r 's/[[:space:]]/,/g' >> "$CSV_FILE"
 # iterate through images to scan them and save the result
 echo $IMAGES | sed -r 's/#/\n/g' | while read image; do
     if [ -n "$image" ]; then
-        grype $image -o template -t template.tmpl | sed -r '/^[[:space:]]*$/d' | while read item; do
+        grype $image --scope all-layers -o template -t template.tmpl | sed -r '/^[[:space:]]*$/d' | while read item; do
             severity=$(echo $item | awk '{print $3}')
             # Filtering by the severity
             if [[ " ${SEVERITY_LIST[@]} " =~ " $severity " ]]; then
