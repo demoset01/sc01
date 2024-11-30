@@ -1,0 +1,3 @@
+{{- range .Matches}}
+{{.Artifact.Name}}-{{.Artifact.Version}} {{.Vulnerability.ID}} {{.Vulnerability.Severity}}
+{{- end}}
