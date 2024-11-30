@@ -4,9 +4,13 @@
 
 # Checking if a chart name and a version specified
 if [ -z "$2" ]; then echo "Please specify a helm chart name and a version"; exit 1; fi
-
 # Checking if Grype is installed
 if [ ! $(which grype) ]; then echo "Grype has not been found. Please follow the README instructions"; exit 1; fi
+# Checking if Grype is installed
+if [ ! $(which curl) ]; then echo "curl has not been found. Please install curl"; exit 1; fi
+# Checking if Grype is installed
+if [ ! $(which jq) ]; then echo "jq has not been found. Please install jq"; exit 1; fi
+
 
 # Checking the mode
 if [ ! $3 == "" ] && [ ! "$3" == 'full' ] && [ ! $3 == 'light' ]; then echo "The mode name is incorrect. Please specity light or full, or ignore it completely"; exit 1; fi
@@ -67,7 +71,7 @@ echo "---"
 # This block can be completely removed if output image name right before scanning
 image_number=$(echo $IMAGES | sed -r 's/#/\n/g' | sed -r '/^[[:space:]]*$/d' | wc -l)
 if [ $image_number -gt 0 ]; then
-    echo "There are $image_number images in the helm chart $1"
+    echo "There is(are) $image_number image(s) in the helm chart $1"
     echo $IMAGES | sed -r 's/#/\n/g' | sed -r '/^[[:space:]]*$/d' | while read image_item; do
         if [ -n "$image_item" ]; then echo $image_item; fi
     done
