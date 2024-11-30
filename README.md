@@ -55,9 +55,9 @@ Follow the instructions on [jq](https://jqlang.github.io/jq/download/)
 ```bash
 bash scan.sh <helm_name> <helm_version> <mode>
 ```
-**`helm_name`** - helm chart name (e.g., bitnami/nginx)
-**`helm_version`** - helm chart version(e.g., 18.2.6)
-**`mode`** - *(Optional)* **`light`** or **`full`**. The default is light.
+- **`helm_name`** - helm chart name (e.g., bitnami/nginx)
+- **`helm_version`** - helm chart version(e.g., 18.2.6)
+- **`mode`** - *(Optional)* **`light`** or **`full`**. The default is light.
 
 ### Design Decisions
 1. **Bash over Python**: Initially considered implementing in Python but opted for Bash to simplify system calls, subprocess handling, and output management.
