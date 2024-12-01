@@ -43,18 +43,13 @@ if [ "$MODE" == "full" ] || [ ! $json_verified ]; then
     echo "The helm chart $1 has not been found in artifacthub.io. Attempting to download the chart"
     TMPDIR=$(mktemp -d)
 
-    if [ -n "$2" ]; then
-        result=$(helm search repo $1 --version $2 | awk '{print $1}' | grep -x $1)
-        if [ -n "$result" ]; then
-            helm pull $1 --version $2 --untar --destination $TMPDIR
-        fi
+    # searching for the chart
+    result=$(helm search repo $1 --version $2 | awk '{print $1}' | grep -x $1)
+    if [ -n "$result" ]; then
+        helm pull $1 --version $2 --untar --destination $TMPDIR
     else 
-        result=$(helm search repo $1 | awk '{print $1}' | grep -x $1)
-        if [ -n "$result" ]; then
-            helm pull $1 --untar --destination $TMPDIR
-        fi
+        then echo "The helm chart $1 has not been found. Please add the chart repo."; exit 1; 
     fi
-    if [ -z "$result" ]; then echo "The helm chart $1 has not been found. Please add the chart repo."; exit 1; fi
 
     # parsing values.yaml
     while read line; do
