@@ -48,7 +48,7 @@ if [ "$MODE" == "full" ] || [ ! $json_verified ]; then
     if [ -n "$result" ]; then
         helm pull $1 --version $2 --untar --destination $TMPDIR
     else 
-        then echo "The helm chart $1 has not been found. Please add the chart repo."; exit 1; 
+        echo "The helm chart $1 has not been found. Please add the chart repo."; exit 1; 
     fi
 
     # parsing values.yaml
